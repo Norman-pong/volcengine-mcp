@@ -30,8 +30,8 @@ logs/
 htmlcov/
 
 # Output
-jimeng_volc_images/
-jimeng_outputs/
+volcengine_images/
+volcengine_outputs/
 *.jpg
 *.png
 *.jpeg

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-即梦AI MCP 服务器 - 火山引擎官方API版
+火山引擎图片生成 MCP Server
 使用火山引擎 v3 API (Bearer Token认证)
 支持序列图生成等高级功能
 """
@@ -12,19 +12,19 @@ from fastmcp import FastMCP
 from image_processor import ImageProcessor
 
 # 创建 FastMCP 实例
-mcp = FastMCP("jimeng-volcengine")
+mcp = FastMCP("volcengine-image")
 
 # API配置
-ARK_API_KEY = os.getenv("ARK_API_KEY", "")
-OUTPUT_DIR = os.getenv("JIMENG_OUTPUT_DIR")
+AITOKEN_VOLCENGINE = os.getenv("AITOKEN_VOLCENGINE", "")
+OUTPUT_DIR = os.getenv("VOLCENGINE_OUTPUT_DIR")
 API_URL = "https://ark.cn-beijing.volces.com/api/v3/images/generations"
 
 # 创建图片处理器实例  
-image_processor = ImageProcessor(output_dir=OUTPUT_DIR, provider="jimeng_volc")
+image_processor = ImageProcessor(output_dir=OUTPUT_DIR, provider="volcengine")
 
 
 @mcp.tool()
-async def jimeng(
+async def volcengine_generate_image(
     prompt: Union[str, List[str]],
     image: Optional[Union[str, List[str]]] = None,
     size: str = "1:1",
@@ -34,28 +34,21 @@ async def jimeng(
     stream: bool = False
 ) -> Dict[str, Any]:
     """
-    即梦AI图片生成 (火山引擎官方API v3)
-    
+    火山引擎图片生成工具。根据文字描述生成高质量图像，支持文生图、图生图、组图生成。
+
+    当用户说"生成图片"、"画一张图"、"创建图像"、"画图"、"做一张图"、"生成一张...的图片"时调用此工具。
+    当用户说"用火山引擎生成图片"、"用volcengine生成图片"、"用即梦生成图片"时调用此工具。
+    当用户需要生成产品图、插画、海报、头像、风景图、人物图等任何图像时调用此工具。
+
     使用方式：
-    1. 文生图：jimeng("一只猫")
-    2. 图生图：jimeng("改为夜晚", image="http://...")  
-    3. 批量生成：jimeng(["猫", "狗", "兔子"])
+    1. 文生图：volcengine_generate_image("一只猫")
+    2. 图生图：volcengine_generate_image("改为夜晚", image="http://...")
+    3. 批量生成：volcengine_generate_image(["猫", "狗", "兔子"])
     4. 组图生成（重要！）：
-       - jimeng("生成3张不同时间段的城市风景：早晨、中午、夜晚", sequential="auto", max_images=3)
+       - volcengine_generate_image("生成3张不同时间段的城市风景：早晨、中午、夜晚", sequential="auto", max_images=3)
        - auto模式下，AI会根据prompt内容自动判断生成几张图
        - max_images参数限制最多生成数量（1-15张）
        - 在prompt中明确指出数量和场景描述效果最佳
-    
-    参数：
-        prompt: 描述文本（字符串或列表）
-        image: 参考图片URL（可选，支持单张或多张）
-        size: 图片尺寸 (1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, 21:9)
-        watermark: 是否添加水印（默认True）
-        sequential: 组图生成模式
-            - "auto": AI自动判断是否生成组图及数量（根据prompt内容）
-            - "disabled": 仅生成单张图片（默认）
-            使用auto时，通过max_images限制最大数量，实际数量由AI决定
-        max_images: 组图最大数量（1-15，默认15）
             - 控制auto模式下最多生成几张图
             - 参考图数量 + 生成图数量 ≤ 15张
             - 建议根据prompt内容设置合理值
@@ -97,18 +90,16 @@ async def _generate_single(
     max_images: int,
     stream: bool
 ) -> Dict[str, Any]:
-    """生成单张或序列图片"""
-    
-    if not ARK_API_KEY:
+    if not AITOKEN_VOLCENGINE:
         return {
             "success": False,
-            "error": "请设置环境变量 ARK_API_KEY",
-            "hint": "export ARK_API_KEY='你的API密钥'"
+            "error": "请设置环境变量 AITOKEN_VOLCENGINE",
+            "hint": "export AITOKEN_VOLCENGINE='你的API密钥'"
         }
     
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {ARK_API_KEY}"
+        "Authorization": f"Bearer {AITOKEN_VOLCENGINE}"
     }
     
     # 尺寸映射
@@ -128,7 +119,7 @@ async def _generate_single(
     
     # 构建请求体
     payload = {
-        "model": "doubao-seedream-4-0-250828",
+        "model": "doubao-seedream-5-0-260128",
         "prompt": prompt,
         "size": actual_size,
         "response_format": "url",
@@ -183,7 +174,7 @@ async def _generate_single(
                     return {
                         "success": False,
                         "error": "模型未开通",
-                        "message": "请在火山引擎控制台开通 doubao-seedream-4-0-250828 模型",
+                        "message": "请在火山引擎控制台开通 doubao-seedream-5-0-260128 模型",
                         "detail": error_info.get("message")
                     }
                 

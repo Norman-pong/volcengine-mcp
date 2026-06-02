@@ -1,13 +1,17 @@
 {
   "mcpServers": {
-    "jimeng-volcengine": {
-      "command": "python3",
+    "volcengine-image": {
+      "command": "uv",
       "args": [
-        "/Users/你的用户名/Desktop/图形mcp/即梦mcp/官方API/jimeng_mcp.py"
+        "run",
+        "--project",
+        "/path/to/volcengine_mcp",
+        "python",
+        "volcengine_mcp.py"
       ],
       "env": {
-        "ARK_API_KEY": "你的ARK API密钥",
-        "JIMENG_OUTPUT_DIR": "~/Desktop/jimeng_images"
+        "AITOKEN_VOLCENGINE": "your-api-key-here",
+        "VOLCENGINE_OUTPUT_DIR": "~/Desktop/volcengine_images"
       }
     }
   }

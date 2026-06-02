@@ -17,7 +17,7 @@ import mimetypes
 class ImageProcessor:
     """图片处理器，负责下载、保存和管理生成的图片"""
     
-    def __init__(self, output_dir: Optional[str] = None, provider: str = "jimeng"):
+    def __init__(self, output_dir: Optional[str] = None, provider: str = "volcengine"):
         """
         初始化图片处理器
         
@@ -64,7 +64,7 @@ class ImageProcessor:
             dir_path = os.path.abspath(os.path.expanduser(output_dir))
         else:
             # 尝试从环境变量获取
-            env_dir = os.getenv("JIMENG_OUTPUT_DIR")
+            env_dir = os.getenv("VOLCENGINE_OUTPUT_DIR")
             if env_dir:
                 dir_path = os.path.abspath(os.path.expanduser(env_dir))
             else:

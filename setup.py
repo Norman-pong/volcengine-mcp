@@ -32,10 +32,10 @@ setup(
         "httpx[socks]>=0.24.0",
         "Pillow>=10.0.0",
     ],
-    py_modules=["jimeng_mcp", "image_processor"],
+    py_modules=["volcengine_mcp", "image_processor"],
     entry_points={
         'console_scripts': [
-            'jimeng-mcp-volcengine=jimeng_mcp:run_server',
+            'volcengine-mcp=volcengine_mcp:run_server',
         ],
     },
     keywords="mcp jimeng ai image-generation volcengine doubao seedream ark",
